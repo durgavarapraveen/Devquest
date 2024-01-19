@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#!c:\iitj\prometeo'24\devquest\devquest\dq\scripts\python.exe
-=======
 #!C:\Users\G D V Praveen\OneDrive\Desktop\ReactProjects\DevQuest\dq\Scripts\python.exe
->>>>>>> main
 
 # http://www.python.org/doc/2.4.4/lib/module-itertools.html
 import itertools
