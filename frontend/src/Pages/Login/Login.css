@@ -1,0 +1,46 @@
+.Login_Main_Container {
+    position: relative;
+}
+
+.Login_Container {
+    background-image: url('./assests/695.jpg');
+    height: 100vh;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-clip: border-box;
+    z-index: 0;
+    filter: blur(4px);
+    -webkit-filter: blur(4px);
+}
+
+.Login_Box {
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    font-weight: bold;
+    border: 3px solid #000000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 80%;
+    padding: 20px;
+    text-align: center;
+
+}
+
+.Login_Box_Slogon {
+    font-size: 60px;
+}
+
+.Login_slogan {
+    width: 50%;
+}
+
+.Login_Register {
+    width: 50%;
+    
+}
