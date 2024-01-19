@@ -79,7 +79,7 @@ class ProductInfoView(APIView):
                 image = product.find("img",{"class":"s-image"})
                 product_info['image'] = image['src'] if image else "Image not found"
                 
-                print(product_info)
+                # print(product_info)
                 products_info.append(product_info)
                 # Print product details
             
@@ -96,7 +96,8 @@ class ProductInfoView(APIView):
         soup = BeautifulSoup(response.content, 'lxml')
         # print(soup.prettify())
         # Example: Find and print the details of each product
-        product_containers = soup.findAll("li", {"class": "product-base"})
+        print(soup.prettify())
+        product_containers = soup.findAll("li.product-base")
         if product_containers:
             products_info = []
             for product in product_containers:
@@ -110,38 +111,49 @@ class ProductInfoView(APIView):
 
                 # Extract product's Original price
              
-                prices = product.select_one("span.product-discountedPrice")
-                if len(prices) > 1:
-                    product_info['original_price'] = prices[1].text.strip()
-                    product_info['price'] = prices[0].text.strip()
-                elif prices:
-                    product_info['original_price'] = prices[0].text.strip()
-                    product_info['price'] = product_info['original_price']
+                price = product.select_one("span.product-discountedPrice")
+                if price:
+                    product_info['price'] = price.text.strip()
                 else:
-                    continue
-                    product_info['original_price'] = "Price not found"
-                    product_info['price'] = "Price not found"
+                    price = product.select_one("div.product-price span")
+                    if price:
+                        product_info['price'] = price.text.strip()
+                    else:
+                        continue
+                original_price = product.select_one("span.product-strike")
+                product_info['original_price'] = original_price.text.strip() if original_price else product_info['price']
+                
+                fewleft = product.select_one("div.xcelerator-plpXceleratorInfoTag")
+                product_info['few_left'] = "True" if fewleft else "False"
+
+                brand = product.select_one("h3.product-brand")
+                product_info['brand'] = brand.text.strip() if brand else 'Not found'
 
 
                 # Extract product link
-                link = product.find("a", {"class": "a-link-normal"})
+                link = product.select_one("a")
                 if link:
-                    product_info['link'] = f"https://www.amazon.in{link['href']}" 
+                    product_info['link'] = f"https://www.myntra.com/{link['href']}" 
                 else:
                     continue
                 # Extract product rating
                 rating = product.find("span", {"class":'a-icon-alt'})
-                product_info['rating'] = rating.text.strip().split()[0] if rating else "Rating not found"
+                product_info['rating'] = rating.text.strip().split()[0] if rating else "Rating not found"
 
                 # Extract number of reviews
                 # reviews = product.select_one("span[data-asin='{ASIN}'] span.a-declarative span.a-size-base")
                 # review_count = reviews.text.strip() if reviews else "Reviews not found"
                 
                 # Extract product image URL
-                image = product.find("img",{"class":"s-image"})
-                product_info['image'] = image['src'] if image else "Image not found"
+                image = product.find("picture",{"class":"img-responsive"})
+                if image:
+                    main_image = image.select_one("img")
+                    product_info['image'] = main_image['src'] if main_image else "Not found"
+                else:
+                    product_info['image'] = "Not found"
                 
-                print(product_info)
+                
+                # print(product_info)
                 products_info.append(product_info)
                 # Print product details
             
@@ -152,7 +164,9 @@ class ProductInfoView(APIView):
             # return Response({'detail':'Products not found','code':400})
             all_products['myntra'] = 'Products not found'
         
-        
+
+        all_products = json.dumps(all_products)
+        return Response({'all_products': all_products})
 
 
 
