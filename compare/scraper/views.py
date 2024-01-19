@@ -96,8 +96,9 @@ class ProductInfoView(APIView):
         soup = BeautifulSoup(response.content, 'lxml')
         # print(soup.prettify())
         # Example: Find and print the details of each product
-        print(soup.prettify())
-        product_containers = soup.findAll("li.product-base")
+        print(str(soup.get_text)[10000:1000000])
+        product_containers = soup.find_all("li",{"class": "product-base"})
+        
         if product_containers:
             products_info = []
             for product in product_containers:
@@ -164,6 +165,69 @@ class ProductInfoView(APIView):
             # return Response({'detail':'Products not found','code':400})
             all_products['myntra'] = 'Products not found'
         
+
+        flipkart_product_url = f"https://www.flipkart.com/search?q={searchsentence}"
+        # headers = {
+        #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        #     "Accept-Language": "en-US,en;q=0.9",
+        # }
+
+        response = requests.get(url=flipkart_product_url, headers=headers)
+
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Example: Find and print the details of each product
+            product_containers = soup.find_all(class_="_13oc-S")
+
+            if product_containers:
+                products_info = []
+                for product in product_containers:
+                    product_info = {}
+                    # Extract product title
+                    product_title = product.find(class_='4rR01T').text if product.find(class='_4rR01T') else next(iter([x.get('title') for x in product.find_all('a') if x.get('title')]), "Not found")
+                    if product_title == 'Not found':
+                        continue
+                    # Extract product prices
+                    price = product.find('div', class_="_30jeq3")
+                    if price:
+                        product_info['price'] = price.text.strip() 
+                    else:
+                        continue
+                    
+                    orgprice = product.find('div', class_="_3I9_wc")
+                    
+                    original_price = orgprice.text.strip() if orgprice else "Original Price not found"
+
+                    # Extract product link
+                    link = product.find('a')['href']
+                    product_link = f"https://www.flipkart.com{link}" if link else "Link not found"
+
+                    # Extract product rating
+                    rating = product.find(class_="_3LWZlK")
+                    product_rating = rating.text.strip() if rating else "Rating not found"
+
+                    # Extract number of reviews
+                    # reviews = product.select_one("span._2_R_DZ")
+                    # review_count = reviews.text.strip() if reviews else "Reviews not found"
+
+                    # Extract product image URL
+                    image = product.find('img')
+                    product_image = image['src'] if image else "Image not found"
+
+                    # Print product details
+                    print("Product Title:", product_title)
+                    print("Product Price:", product_price)
+                    print("Product Original Price:", original_price)
+                    print("Product Rating:", product_rating)
+                    # print("Review Count:", review_count)
+                    print("Product Link:", product_link)
+                    print("Product Image:", product_image)
+                    print("\n")
+            else:
+                print("No products found on the page.")
+        else:
+            print("Failed to retrieve the page. Status code:", response.status_code)
 
         all_products = json.dumps(all_products)
         return Response({'all_products': all_products})
