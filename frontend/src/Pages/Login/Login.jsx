@@ -1,14 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState} from 'react'
 import './Login.css'
 import TextField from '@mui/material/TextField';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useCookies } from "react-cookie";
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
 
+    document.title = 'Login | Compare'
+
+    const navigate = useNavigate()
+    
+
+    const [accessToken, setAccessCookie] = useCookies(["access_token"]);
+    const [refreshToken, setRefreshCookie] = useCookies(["Refresh_token"]);
+
     const [openSignup, setOpenSignup] = useState(false)
     const [loginData, setLoginData] = useState({
-        email: '',
+        username: '',
         password: ''
     })
 
@@ -26,9 +37,9 @@ function Login() {
         setOpenSignup(false)
     }
 
-    const handleSubmitLogin = (e) => {
+    const handleSubmitLogin = async (e) => {
         e.preventDefault()
-        if (loginData.email === '') {
+        if (loginData.username === '') {
             return toast.warn('Please enter Email', {
                 position: 'top-center',
                 theme: 'colored'
@@ -40,11 +51,26 @@ function Login() {
                 theme: 'colored'
             })
         }
+
+        try {
+            const res = await axios.post('http://127.0.0.1:8000/users/token/', {'username': loginData['username'], 'password': loginData['password']}, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            const data = res.data;
+            setAccessCookie('access_token', data.access)
+            setRefreshCookie("Refresh_token", data.refresh)
+            navigate('/')
+            console.log(data)
+        }catch(error) {
+            console.error(error)
+        }
         console.log(loginData)
     }
 
-    const handleSubmitRegister = (e) => {
-        e.preventDefault()
+    const handleSubmitRegister = async (e) => {
+        // e.preventDefault()
         if (registerData.username === '') {
             return toast.warn('Please enter Username', {
                 position: 'top-center',
@@ -62,6 +88,33 @@ function Login() {
                 position: 'top-center',
                 theme: 'colored'
             })
+        }
+
+
+        try {
+            const res = await fetch(`http://localhost:8000/users/create/`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify(registerData)
+            })
+            if (res.ok) {
+                toast.success("Registered Successfully", {
+                    position: "top-center",
+                    theme: "colored"
+                });
+                console.log(res)
+
+                navigate('/login');
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData);
+                alert('Registration failed. Please check your inputs and try again.');
+            }
+        } catch (error) {
+            console.error('Error :', error)
         }
         console.log(registerData)
     }
@@ -100,13 +153,13 @@ function Login() {
                                 :
                                 <div className='Login_Form'>
                                     <form>
-                                        <TextField id="standard-basic" label="Email" type='email' variant="standard"
+                                        <TextField id="standard-basic" label="Email" type='text' variant="standard"
                                             sx={{
                                                 color: 'white',
                                                 margin: '10px 0'
                                             }}
-                                            value={loginData.email}
-                                            onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                                            value={loginData.username}
+                                            onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
                                         />
                                         <TextField id="standard-basic" label="Password" type='password' variant="standard" value={loginData.password} onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
                                         <button className='button-50' onClick={handleSubmitLogin}>Login</button>

@@ -4,10 +4,16 @@ import './Home.css'
 import Photo1 from './assests/4040107.jpg'
 import Photo2 from './assests/695.jpg'
 import Rating from '@mui/material/Rating';
+import { useCookies } from 'react-cookie';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Home() {
 
     const [width, setWidth] = useState(window.innerWidth);
+
+    const [accessToken, setAccessCookie] = useCookies(['access_token'])
+
+    // console.log(accessToken.access_token)
 
     function handledWindowSizeChange() {
         setWidth(window.innerWidth);
