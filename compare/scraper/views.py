@@ -185,7 +185,7 @@ class ProductInfoView(APIView):
                 for product in product_containers:
                     product_info = {}
                     # Extract product title
-                    product_title = product.find(class_='4rR01T').text if product.find(class='_4rR01T') else next(iter([x.get('title') for x in product.find_all('a') if x.get('title')]), "Not found")
+                    product_title = product.find(class_='4rR01T').text if product.find(class_='_4rR01T') else next(iter([x.get('title') for x in product.find_all('a') if x.get('title')]), "Not found")
                     if product_title == 'Not found':
                         continue
                     # Extract product prices
