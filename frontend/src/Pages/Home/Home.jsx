@@ -6,10 +6,14 @@ import Photo2 from './assests/695.jpg'
 import Rating from '@mui/material/Rating';
 import { useCookies } from 'react-cookie';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 function Home() {
 
     const [width, setWidth] = useState(window.innerWidth);
+
+    const [electronics, setElectronics] = useState([])
+
 
     const [accessToken, setAccessCookie] = useCookies(['access_token'])
 
@@ -27,6 +31,25 @@ function Home() {
     }, [])
 
     const isMobile = width <= 800;
+
+    useEffect(() => {
+        const GetData = async () => {
+            try {
+                const res = await axios.get(`http://127.0.0.1:8000/scrap/product_info/electronics/`, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                const data = res.data
+                const parseData = JSON.parse(data.all_products)
+                console.log(parseData.amazon)
+                setElectronics(parseData.amazon)
+            } catch (error) {
+                console.error('Error :', error)
+            }
+        }
+        GetData()
+    }, [])
 
     return (
         <>
@@ -95,209 +118,38 @@ function Home() {
                 <div className='Home_Items_Container'>
 
 
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
+                    {
+                        electronics.map((data, index) => (
+                            <div className='Home_Items_Product_Container' key={index}>
+                                <div className='Home_Items_Product_Container_Img'>
+                                    <img src={data.image} alt='Photo1' className='' />
+                                </div>
+                                <div className='Home_Items_Product_Container_Price'>
+                                    <p>{data.price}</p>
+                                </div>
+                                <div className='Home_Items_Product_Container_Details'>
+                                    <p>{data.title} </p>
+                                </div>
+                                <div className='flex row h-[20px]'>
+                                    <div className='w-50%'>
+                                        <Rating
+                                            name='Product Rating'
+                                            value={data.rating}
+                                            readOnly
+                                            precision={0.1}
+                                            style={{
+                                                width: '100%',
+                                                fontSize: '17px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div className='Home_Items_Product_Container_Rating_Num'>
+                                        <p>10,000</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
-                            </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
-                            </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
-                            </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
-                            </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
-                            </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='Home_Items_Product_Container'>
-                        <div className='Home_Items_Product_Container_Img'>
-                            <img src={Photo1} alt='Photo1' className='' />
-                        </div>
-                        <div className='Home_Items_Product_Container_Price'>
-                            <p>₹ 17,999.00</p>
-                        </div>
-                        <div className='Home_Items_Product_Container_Details'>
-                            <p>Redmi Note 13 5G (6GB RAM, 128GB, Arctic White)</p>
-                        </div>
-                        <div className='flex row h-[20px]'>
-                            <div className='w-50%'>
-                                <Rating
-                                    name='Product Rating'
-                                    value={3.5}
-                                    readOnly
-                                    precision={0.25}
-                                    style={{
-                                        width:'100%',
-                                        fontSize: '17px'
-                                    }} 
-                                />
-                            </div>
-                            <div className='Home_Items_Product_Container_Rating_Num'>
-                                <p>10,000</p>
-                            </div>
-                        </div>
-                    </div>
-
+                        ))
+                    }
 
                 </div>
             </div>
