@@ -20,6 +20,12 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 
+class WishlistView(APIView):
+    permission_classes = (IsAuthenticated, )
+    
+    def post(self, request, pinfo):
+        pinfo = json.loads(pinfo)
+
 class ProductInfoView(APIView):
     permission_classes = (AllowAny, )
 
