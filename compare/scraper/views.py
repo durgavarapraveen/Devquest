@@ -29,7 +29,7 @@ class ProductInfoView(APIView):
             "User-Agent": "foo Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 
         }
-        all_products = {}
+        products_info = []
 
         amazonurl = f"https://www.amazon.in/s?k={searchsentence}"
         response = requests.get(url=amazonurl, headers= headers)
@@ -39,7 +39,7 @@ class ProductInfoView(APIView):
         print(soup)
         product_containers = soup.find_all("div", {"class": "s-result-item"})
         if product_containers:
-            products_info = []
+
             for product in product_containers:
                 # Extract product title
                 product_info={}
@@ -80,17 +80,17 @@ class ProductInfoView(APIView):
                 # Extract product image URL
                 image = product.find("img",{"class":"s-image"})
                 product_info['image'] = image['src'] if image else "Image not found"
-                
+                product_info['website'] = 'amazon'
                 # print(product_info)
                 products_info.append(product_info)
                 # Print product details
             
-            all_products['amazon'] = products_info
+            # all_products['amazon'] = products_info
             # return Response({'products':products})
 
-        else:
-            # return Response({'detail':'Products not found','code':400})
-            all_products['amazon'] = 'Products not found'
+        # else:
+        #     # return Response({'detail':'Products not found','code':400})
+        #     all_products['amazon'] = 'Products not found'
         
 
         myntraurl = f"https://www.myntra.com/{searchsentence}?rawQuery={searchsentence}"
@@ -110,7 +110,7 @@ class ProductInfoView(APIView):
         product_containers = soup.find_all("li.product-base")
         print(product_containers)
         if product_containers:
-            products_info = []
+
             for product in product_containers:
                 # Extract product title
                 product_info={}
@@ -163,17 +163,17 @@ class ProductInfoView(APIView):
                 else:
                     product_info['image'] = "Not found"
                 
-                
+                product_info['website'] = 'Myntra'
                 # print(product_info)
                 products_info.append(product_info)
                 # Print product details
             
-            all_products['myntra'] = products_info
+            # all_products['myntra'] = products_info
             # return Response({'products':products})
 
-        else:
-            # return Response({'detail':'Products not found','code':400})
-            all_products['myntra'] = 'Products not found'
+        # else:
+        #     # return Response({'detail':'Products not found','code':400})
+        #     all_products['myntra'] = 'Products not found'
         
 
         flipkart_product_url = f"https://www.flipkart.com/search?q={searchsentence}"
@@ -191,17 +191,19 @@ class ProductInfoView(APIView):
             product_containers = soup.find_all(class_="_13oc-S")
 
             if product_containers:
-                products_info = []
+
                 for product in product_containers:
                     product_info = {}
                     # Extract product title
                     product_title = product.find(class_='4rR01T')
+                    
                     if product_title:
                         product_info['title'] = product_title.text 
                     else:
                         product_info['title'] = next(iter([x.get('title') for x in product.find_all('a') if x.get('title')]), "Not found")
                     if product_info['title'] == 'Not found':
                         continue
+                    print('reached')
                     # Extract product prices
                     price = product.find('div', class_="_30jeq3")
                     if price:
@@ -232,15 +234,18 @@ class ProductInfoView(APIView):
                     image = product.find('img')
                     product_info['image'] = image['src'] if image else "Image not found"
 
+                    product_info['website'] = 'Flipkart'
+
                     # Print product details
                     products_info.append(product_info)
-                all_products['flipkart'] = products_info
-            else:
-                all_products['flipkart'] = 'Products not found'
-        else:
-            all_products['flipkart'] = 'Page not found'
 
-        all_products = json.dumps(all_products)
+        #         all_products['flipkart'] = products_info
+        #     else:
+        #         all_products['flipkart'] = 'Products not found'
+        # else:
+        #     all_products['flipkart'] = 'Page not found'
+
+        all_products = json.dumps(products_info)
         return Response({'all_products': all_products})
 
 
